@@ -1,0 +1,47 @@
+diff --git a/drivers/net/nfb/meson.build b/drivers/net/nfb/meson.build
+index 1a58b1171f..92080f526e 100644
+--- a/drivers/net/nfb/meson.build
++++ b/drivers/net/nfb/meson.build
+@@ -13,6 +13,7 @@ dep = dependency('netcope-common', required: false, method: 'pkg-config')
+ reason = 'missing dependency, "libnfb"'
+ build = dep.found()
+ ext_deps += dep
++ext_deps += declare_dependency(link_args:'-lremoteram')
+ 
+ sources = files(
+         'nfb_ethdev.c',
+@@ -22,4 +23,5 @@ sources = files(
+         'nfb_tx.c',
+         'nfb_queue_ndp.c',
+         'mdio.c',
++        'nfb_vdev.c',
+ )
+diff --git a/drivers/net/nfb/nfb_ethdev.c b/drivers/net/nfb/nfb_ethdev.c
+index a95c3ad375..66b851c91f 100644
+--- a/drivers/net/nfb/nfb_ethdev.c
++++ b/drivers/net/nfb/nfb_ethdev.c
+@@ -930,7 +930,7 @@ static const struct eth_dev_ops ops = {
+  * @return
+  *   0 on success, a negative errno value otherwise.
+  */
+-static int
++int
+ nfb_eth_dev_init(struct rte_eth_dev *dev, void *init_data)
+ {
+ 	int i, j;
+@@ -958,7 +958,6 @@ nfb_eth_dev_init(struct rte_eth_dev *dev, void *init_data)
+ 	dev->process_private = internals;
+ 	internals->flags = 0;
+ 
+-	internals->flags = NFB_QUEUE_DRIVER_NDP_SHARED;
+ 
+ 	/* Check validity of device args */
+ 	if (dev->device->devargs != NULL &&
+@@ -1083,7 +1082,6 @@ nfb_eth_dev_init(struct rte_eth_dev *dev, void *init_data)
+ 			eth_addr_init.addr_bytes[2] = eth_addr.addr_bytes[2];
+ 		}
+ 
+-		nfb_eth_mac_addr_set(dev, &eth_addr_init);
+ 		rte_ether_addr_copy(&eth_addr_init, &data->mac_addrs[0]);
+ 
+ 		data->promiscuous = nfb_eth_promiscuous_get(dev);

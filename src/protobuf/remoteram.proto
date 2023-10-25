@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package remoteram;
+
+service RemoteRam {
+	rpc Ram_req(ram_req) returns (ram_resp) {}
+}
+
+message ram_req {
+	int32 type = 1;
+	int64 addr = 2;
+	int32 nbyte = 3;
+	bytes data = 4;
+}
+
+message ram_resp {
+	int32 status = 1;
+	bytes data = 2;
+}
